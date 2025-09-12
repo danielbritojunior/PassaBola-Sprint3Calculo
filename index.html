@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Funções com Gráficos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        input[type="number"] {
+            background-color: #374151;
+            border: 1px solid #4b5563;
+            color: #e5e7eb;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
+        }
+        .result-box {
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .formula {
+            font-size: 1.125rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-white">Painel Interativo de Funções</h1>
+            <p class="text-lg text-gray-400 mt-2">Explore conceitos de cálculo e funções alterando os parâmetros abaixo.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- 1. Funções: Crescimento de seguidores -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 flex flex-col">
+                <h2 class="text-2xl font-bold text-indigo-400 mb-1">1. Funções: Crescimento Exponencial</h2>
+                <p class="text-gray-400 mb-4">Uma função exponencial descreve algo que cresce cada vez mais rápido. É ideal para simular o aumento de seguidores em uma rede social.</p>
+                <p class="font-mono text-center bg-gray-900 p-3 rounded-md mb-6 text-emerald-400 formula">
+                    f(t) = S₀ · b<sup>t</sup>
+                </p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="initialFollowers" class="block text-sm font-medium text-gray-300 mb-1">Seguidores Iniciais (S₀)</label>
+                        <input id="initialFollowers" type="number" value="5000" step="100">
+                    </div>
+                    <div>
+                        <label for="growthBase" class="block text-sm font-medium text-gray-300 mb-1">Taxa de Crescimento (b)</label>
+                        <input id="growthBase" type="number" value="1.08" step="0.01">
+                    </div>
+                </div>
+                <div class="result-box mt-auto">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <label for="timeFollower" class="text-sm">Calcular para o tempo t =</label>
+                        <input id="timeFollower" type="number" value="10" class="w-24 text-center p-1">
+                    </div>
+                    <p class="text-lg">Calculando: Número de Seguidores f(t)</p>
+                    <p id="followerResultValue" class="text-3xl font-bold text-emerald-400 mt-1">0</p>
+                </div>
+                <div class="chart-container mt-6">
+                    <canvas id="followerChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 2. Limites: Saturação do engajamento -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 flex flex-col">
+                <h2 class="text-2xl font-bold text-indigo-400 mb-1">2. Limites: Saturação de Engajamento</h2>
+                <p class="text-gray-400 mb-4">Este modelo logístico mostra um crescimento que desacelera ao se aproximar de um valor máximo (limite), como a saturação de engajamento de um post.</p>
+                <p class="font-mono text-center bg-gray-900 p-3 rounded-md mb-6 text-emerald-400 formula">
+                    f(t) = L · (1 - e<sup>-kt</sup>)
+                </p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="limitL" class="block text-sm font-medium text-gray-300 mb-1">Limite Máximo (L)</label>
+                        <input id="limitL" type="number" value="10000" step="500">
+                    </div>
+                    <div>
+                        <label for="steepnessK" class="block text-sm font-medium text-gray-300 mb-1">Taxa de Crescimento (k)</label>
+                        <input id="steepnessK" type="number" value="0.1" step="0.01">
+                    </div>
+                </div>
+                <div class="result-box mt-auto">
+                     <div class="flex items-center justify-center gap-2 mb-2">
+                        <label for="timeEngagement" class="text-sm">Calcular para o tempo t =</label>
+                        <input id="timeEngagement" type="number" value="10" class="w-24 text-center p-1">
+                    </div>
+                    <p class="text-lg">Calculando: Engajamento Atual f(t)</p>
+                    <p id="engagementResultValue" class="text-3xl font-bold text-emerald-400 mt-1">0</p>
+                </div>
+                <div class="chart-container mt-6">
+                    <canvas id="engagementChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 3. Derivadas: Velocidade instantânea -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 flex flex-col">
+                <h2 class="text-2xl font-bold text-indigo-400 mb-1">3. Derivadas: Velocidade Instantânea</h2>
+                <p class="text-gray-400 mb-4">A derivada calcula a velocidade instantânea <span class="font-mono text-indigo-300">v(t)</span> a partir da função de posição. O foco aqui é a função da velocidade, que é o resultado dessa operação.</p>
+                <div class="font-mono text-center bg-gray-900 p-3 rounded-md mb-4 text-emerald-400 formula">
+                   <p>Velocidade: v(t) = ds/dt = v₀ + at</p>
+                </div>
+                 <p class="text-sm text-gray-400 mb-4 text-center">Defina os parâmetros do movimento:</p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="acceleration" class="block text-sm font-medium text-gray-300 mb-1">Aceleração (a)</label>
+                        <input id="acceleration" type="number" value="2" step="0.1">
+                    </div>
+                    <div>
+                        <label for="initialVelocity" class="block text-sm font-medium text-gray-300 mb-1">Velocidade Inicial (v₀)</label>
+                        <input id="initialVelocity" type="number" value="5" step="1">
+                    </div>
+                </div>
+                <div class="result-box mt-auto">
+                     <div class="flex items-center justify-center gap-2 mb-2">
+                        <label for="timeVelocity" class="text-sm">Calcular para o tempo t =</label>
+                        <input id="timeVelocity" type="number" value="10" class="w-24 text-center p-1">
+                    </div>
+                    <p class="text-lg">Calculando: Velocidade Instantânea v(t)</p>
+                    <p id="velocityResultValue" class="text-3xl font-bold text-emerald-400 mt-1">0 m/s</p>
+                </div>
+                <div class="chart-container mt-6">
+                    <canvas id="velocityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 4. Integrais: Distância percorrida -->
+            <div class="bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 flex flex-col">
+                <h2 class="text-2xl font-bold text-indigo-400 mb-1">4. Integrais: Distância Percorrida</h2>
+                <p class="text-gray-400 mb-4">A integral calcula a área sob a curva da velocidade para encontrar a distância percorrida em um intervalo de tempo.</p>
+                <p class="font-mono text-center bg-gray-900 p-3 rounded-md mb-2 text-emerald-400 formula" style="line-height: 1.5;">
+                    D = ∫<sub>t₁</sub><sup>t₂</sup> (v₀ + at) dt
+                </p>
+                 <p class="text-sm text-gray-400 mb-4 text-center">Defina os parâmetros da função de velocidade:</p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="integralAcceleration" class="block text-sm font-medium text-gray-300 mb-1">Aceleração (a)</label>
+                        <input id="integralAcceleration" type="number" value="2" step="0.1">
+                    </div>
+                    <div>
+                        <label for="integralInitialVelocity" class="block text-sm font-medium text-gray-300 mb-1">Velocidade Inicial (v₀)</label>
+                        <input id="integralInitialVelocity" type="number" value="5" step="1">
+                    </div>
+                </div>
+                <p class="text-sm text-gray-400 mb-4 text-center">Defina o intervalo de tempo para o cálculo:</p>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="integralStart" class="block text-sm font-medium text-gray-300 mb-1">Início do Intervalo (t₁)</label>
+                        <input id="integralStart" type="number" value="2" step="1">
+                    </div>
+                    <div>
+                        <label for="integralEnd" class="block text-sm font-medium text-gray-300 mb-1">Fim do Intervalo (t₂)</label>
+                        <input id="integralEnd" type="number" value="8" step="1">
+                    </div>
+                </div>
+                <div class="result-box mt-auto">
+                    <p class="text-lg">Calculando: Distância Total (D)</p>
+                    <p id="distanceValue" class="text-3xl font-bold text-emerald-400 mt-1">0.00 m</p>
+                </div>
+                <div class="chart-container mt-4">
+                    <canvas id="distanceChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const chartConfig = {
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Tempo (t)', color: '#9ca3af' },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Valor f(t)', color: '#9ca3af' },
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#d1d5db' } }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                },
+            };
+            const addEventListeners = (elements, event, handler) => {
+                elements.forEach(el => el.addEventListener(event, handler));
+            };
+
+            // --- 1. Follower Growth Chart ---
+            const followerCtx = document.getElementById('followerChart').getContext('2d');
+            const initialFollowersInput = document.getElementById('initialFollowers');
+            const growthBaseInput = document.getElementById('growthBase');
+            const timeFollowerInput = document.getElementById('timeFollower');
+            const followerResultValue = document.getElementById('followerResultValue');
+
+            const followerChart = new Chart(followerCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Seguidores',
+                        data: [],
+                        borderColor: '#818cf8',
+                        backgroundColor: 'rgba(129, 140, 248, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    ...chartConfig.options,
+                    scales: {
+                        ...chartConfig.options.scales,
+                        y: {
+                            ...chartConfig.options.scales.y,
+                            title: { display: true, text: 'Seguidores', color: '#9ca3af' }
+                        }
+                    }
+                }
+            });
+
+            function updateFollowerChart() {
+                const s0 = parseFloat(initialFollowersInput.value) || 0;
+                const b = parseFloat(growthBaseInput.value) || 0;
+                const t = parseFloat(timeFollowerInput.value) || 0;
+                const result = s0 * Math.pow(b, t);
+                followerResultValue.textContent = result.toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' seguidores';
+                const labels = Array.from({ length: 21 }, (_, i) => i);
+                const data = labels.map(time => s0 * Math.pow(b, time));
+                followerChart.data.labels = labels;
+                followerChart.data.datasets[0].data = data;
+                followerChart.update();
+            }
+            addEventListeners([initialFollowersInput, growthBaseInput, timeFollowerInput], 'input', updateFollowerChart);
+
+            // --- 2. Engagement Saturation Chart ---
+            const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+            const limitLInput = document.getElementById('limitL');
+            const steepnessKInput = document.getElementById('steepnessK');
+            const timeEngagementInput = document.getElementById('timeEngagement');
+            const engagementResultValue = document.getElementById('engagementResultValue');
+            const engagementChart = new Chart(engagementCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Engajamento',
+                        data: [],
+                        borderColor: '#f472b6',
+                        backgroundColor: 'rgba(244, 114, 182, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...chartConfig.options,
+                    scales: {
+                        ...chartConfig.options.scales,
+                        y: {
+                            ...chartConfig.options.scales.y,
+                            title: { display: true, text: 'Engajamento', color: '#9ca3af' }
+                        }
+                    }
+                }
+            });
+
+            function updateEngagementChart() {
+                const L = parseFloat(limitLInput.value) || 0;
+                const k = parseFloat(steepnessKInput.value) || 0;
+                const t = parseFloat(timeEngagementInput.value) || 0;
+                const result = L * (1 - Math.exp(-k * t));
+                engagementResultValue.textContent = result.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+                const labels = Array.from({ length: 41 }, (_, i) => i);
+                const data = labels.map(time => L * (1 - Math.exp(-k * time)));
+                engagementChart.data.labels = labels;
+                engagementChart.data.datasets[0].data = data;
+                engagementChart.update();
+            }
+            addEventListeners([limitLInput, steepnessKInput, timeEngagementInput], 'input', updateEngagementChart);
+
+            // --- 3. Derivative ---
+            const velocityCtx = document.getElementById('velocityChart').getContext('2d');
+            const accelerationInput = document.getElementById('acceleration');
+            const initialVelocityInput = document.getElementById('initialVelocity');
+            const timeVelocityInput = document.getElementById('timeVelocity');
+            const velocityResultValue = document.getElementById('velocityResultValue');
+            const velocityOptions = {
+                ...chartConfig.options,
+                scales: {
+                    ...chartConfig.options.scales,
+                    y: {
+                        ...chartConfig.options.scales.y,
+                        beginAtZero: false, 
+                        title: { display: true, text: 'Velocidade (m/s)', color: '#9ca3af' }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            };
+            const velocityChart = new Chart(velocityCtx, { type: 'line', data: { labels: [], datasets: [{ data: [], borderColor: '#34d399', tension: 0.1 }] }, options: velocityOptions });
+            
+            function updateDerivativeChart() {
+                const a = parseFloat(accelerationInput.value) || 0;
+                const v0 = parseFloat(initialVelocityInput.value) || 0;
+                const t = parseFloat(timeVelocityInput.value) || 0;
+                
+                const velocityResult = v0 + a * t;
+                velocityResultValue.textContent = `${velocityResult.toFixed(2)} m/s`;
+
+                const chartMaxTime = Math.max(t, 10);
+                const labels = Array.from({ length: Math.ceil(chartMaxTime) + 1 }, (_, i) => i);
+                const velocityData = labels.map(time => v0 + a * time);
+                
+                velocityChart.data.labels = labels;
+                velocityChart.data.datasets[0].data = velocityData;
+                velocityChart.update();
+            }
+            addEventListeners([accelerationInput, initialVelocityInput, timeVelocityInput], 'input', updateDerivativeChart);
+
+            // --- 4. Integral ---
+            const distanceCtx = document.getElementById('distanceChart').getContext('2d');
+            const integralAccelerationInput = document.getElementById('integralAcceleration');
+            const integralInitialVelocityInput = document.getElementById('integralInitialVelocity');
+            const integralStartInput = document.getElementById('integralStart');
+            const integralEndInput = document.getElementById('integralEnd');
+            const distanceValue = document.getElementById('distanceValue');
+            const distanceChart = new Chart(distanceCtx, { 
+                type: 'line', 
+                data: { 
+                    labels: [], 
+                    datasets: [
+                        { label: 'Velocidade', data: [], borderColor: '#34d399', tension: 0.1, fill: false }, 
+                        { label: 'Área da Integral (Distância)', data: [], backgroundColor: 'rgba(52, 211, 153, 0.3)', borderColor: 'transparent', fill: 'origin', pointRadius: 0 }
+                    ] 
+                }, 
+                options: {
+                    ...velocityOptions,
+                    plugins: {
+                        ...velocityOptions.plugins,
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: '#d1d5db'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    // Mostra a dica de ferramenta apenas para a linha de velocidade (índice 0)
+                                    if (context.datasetIndex === 0) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y.toFixed(2) + ' m/s';
+                                        }
+                                        return label;
+                                    }
+                                    return null; // Oculta a dica para a área
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            function updateIntegralChart() {
+                const a = parseFloat(integralAccelerationInput.value) || 0;
+                const v0 = parseFloat(integralInitialVelocityInput.value) || 0;
+                let startT = parseFloat(integralStartInput.value) || 0;
+                let endT = parseFloat(integralEndInput.value) || 0;
+                if (startT > endT) { [startT, endT] = [endT, startT]; }
+
+                const chartMaxTime = Math.max(endT, 10);
+                const labels = Array.from({ length: Math.ceil(chartMaxTime) + 1 }, (_, i) => i);
+                const velocityData = labels.map(time => v0 + a * time);
+
+                // Integral of v(t) is s(t) = v0*t + (a/2)*t^2
+                const integral = (time) => v0 * time + (a / 2) * time * time;
+                const distance = integral(endT) - integral(startT);
+                distanceValue.textContent = `${distance.toFixed(2)} m`;
+                
+                const areaData = labels.map(time => (time >= startT && time <= endT) ? v0 + a * time : null);
+                distanceChart.data.labels = labels;
+                distanceChart.data.datasets[0].data = velocityData;
+                distanceChart.data.datasets[1].data = areaData;
+                distanceChart.update();
+            }
+
+            const allIntegralInputs = [
+                integralAccelerationInput, integralInitialVelocityInput, 
+                integralStartInput, integralEndInput
+            ];
+            addEventListeners(allIntegralInputs, 'input', updateIntegralChart);
+
+            // Initial calls
+            updateFollowerChart();
+            updateEngagementChart();
+            updateDerivativeChart();
+            updateIntegralChart();
+        });
+    </script>
+</body>
+</html>
+
+
+
